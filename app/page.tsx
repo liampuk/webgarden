@@ -7,7 +7,7 @@ import { format } from "date-fns";
 // temp dev page
 const PAGE_ID = '2eb58c1887f9803ea23dc58ff4be80be';
 
-export const revalidate = 60 * 60;
+// export const revalidate = 60 * 60;
 
 export default async function Home() {
   console.log('[ISR] Page rendering at:', new Date().toISOString());
