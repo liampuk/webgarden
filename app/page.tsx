@@ -24,7 +24,7 @@ export default async function Home() {
 
 
   return (
-    <div className="flex flex-col gap-4 p-4 items-center my-16">
+    <div className="flex flex-col gap-4 p-4 items-center my-16 w-full overflow-x-hidden">
       <h1 className="text-6xl mb-10 font-serif">Website Garden</h1>
       <p className="text-sm text-gray-300 mb-10 max-w-[600px] text-center">
         Over the years I&apos;ve grown a collection of well designed websites. From unique experiences full of eye catching animation to simple intuitive layouts, find some inspiration here.
