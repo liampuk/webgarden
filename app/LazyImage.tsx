@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
 
 interface LazyImageProps {
     src: string;
@@ -44,7 +43,8 @@ export function LazyImage({ src, alt, width, height, className }: LazyImageProps
     return (
         <div ref={imgRef}>
             {isInView ? (
-                <Image
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
                     src={src}
                     alt={alt}
                     width={width}

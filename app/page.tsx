@@ -3,7 +3,9 @@ import { parseBlocks } from "@/lib/notion/parser";
 import { LazyImage } from "./LazyImage";
 import { format } from "date-fns";
 
-const PAGE_ID = '2d11a1dec7c842cdac59e076aefccc59';
+// const PAGE_ID = '2d11a1dec7c842cdac59e076aefccc59';
+// temp dev page
+const PAGE_ID = '2eb58c1887f9803ea23dc58ff4be80be';
 
 export const revalidate = 60 * 60;
 
