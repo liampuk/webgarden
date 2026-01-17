@@ -62,24 +62,46 @@ export function parseBlock(block: BlockObjectResponse | PartialBlockObjectRespon
 export async function parseBlocks(blocks: (PartialBlockObjectResponse | BlockObjectResponse)[]): Promise<WebsiteBlockGroup[]> {
     const allBlocks = blocks.map(parseBlock).filter((block): block is ParsedBlock => block !== null);
 
-    const websiteBlockGroups: WebsiteBlockGroup[] = [];
-    console.log(allBlocks)
-
     // blocks are in the format [image, paragraph url, newline, image, paragraph url, newline, ...]
+    // First, collect all the image processing promises
+    const imageProcessingPromises: Promise<{ index: number; r2ImageUrl: string; block: ParsedBlock }>[] = [];
+
     for (let i = 0; i < allBlocks.length; i += 3) {
         const block = allBlocks[i];
         if (block.type === 'image') {
-            console.log(i, block.content)
-            const r2ImageUrl = await getOrUploadImage(block.content);
-            websiteBlockGroups.push({
-                id: block.id,
-                createdTime: block.createdTime,
-                imageUrl: r2ImageUrl,
-                websiteUrl: allBlocks[i + 1].content
-            });
+            // Create promise but don't await - process in parallel
+            imageProcessingPromises.push(
+                getOrUploadImage(block.content).then(r2ImageUrl => ({
+                    index: i,
+                    r2ImageUrl,
+                    block
+                }))
+            );
         } else {
             throw new Error('Expected image block at index ' + i);
         }
     }
+
+    // Wait for all images to be processed in parallel
+    const processedImages = await Promise.allSettled(imageProcessingPromises);
+
+    // Build the final array, filtering out failed uploads
+    const websiteBlockGroups: WebsiteBlockGroup[] = processedImages
+        .map((result, idx) => {
+            if (result.status === 'fulfilled') {
+                const { index, r2ImageUrl, block } = result.value;
+                return {
+                    id: block.id,
+                    createdTime: block.createdTime,
+                    imageUrl: r2ImageUrl,
+                    websiteUrl: allBlocks[index + 1].content
+                };
+            } else {
+                console.error(`Failed to process image at index ${idx}:`, result.reason);
+                return null;
+            }
+        })
+        .filter((group): group is WebsiteBlockGroup => group !== null);
+
     return websiteBlockGroups;
 }
