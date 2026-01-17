@@ -1,11 +1,11 @@
 import { fetchNotionBlocks } from "@/lib/notion/fetch";
 import { parseBlocks } from "@/lib/notion/parser";
-import Image from "next/image";
+import { LazyImage } from "./LazyImage";
 import { format } from "date-fns";
 
 const PAGE_ID = '2d11a1dec7c842cdac59e076aefccc59';
 
-export const revalidate = 60;
+export const revalidate = 60 * 60;
 
 export default async function Home() {
   console.log('[ISR] Page rendering at:', new Date().toISOString());
@@ -28,7 +28,7 @@ export default async function Home() {
       </p>
       {websiteBlockGroups.map((website) => (
         <div key={website.websiteUrl} className="flex flex-col gap-2 items-center bg-gray-100/10 p-4 rounded-md">
-          <Image
+          <LazyImage
             className="rounded-md w-[600px]"
             src={website.imageUrl}
             alt={website.websiteUrl}
