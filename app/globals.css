@@ -10,6 +10,15 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-instrument-serif);
+}
+
+.font-serif {
+  letter-spacing: -0.02em;
+}
+
+.font-editorial {
+  font-family: 'PP Editorial Old', serif;
 }
 
 @media (prefers-color-scheme: dark) {
