@@ -3,13 +3,23 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --accent: #3b82f6;
+  --muted: #323232;
+  --border: #e5e7eb;
+  --card-background: #f3f3f3;
+  --card-foreground: #e6e6e6;
+  --card-foreground-hover: #dcdcdc;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-card-background: var(--card-background);
+  --color-card-foreground: var(--card-foreground);
+  --color-card-foreground-hover: var(--card-foreground-hover);
   --font-serif: var(--font-instrument-serif);
 }
 
@@ -21,6 +31,12 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --accent: #60a5fa;
+    --muted: #c5c5c5;
+    --border: #404040;
+    --card-background: #171717;
+    --card-foreground: #242424;
+    --card-foreground-hover: #313131;
   }
 }
 
