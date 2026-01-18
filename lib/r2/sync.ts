@@ -6,6 +6,10 @@ export async function getOrUploadImage(notionImageUrl: string): Promise<string> 
     const key = generateImageKey(notionImageUrl);
     const s3Client = getR2Client();
 
+    if (process.env.NODE_ENV === 'development' && process.env.SKIP_R2_CHECKS === 'true') {
+        return generateR2PublicUrl(key.replace(/\.(jpg|jpeg|png|gif)$/i, '.webp'));
+    }
+
     // Check if image already exists in R2
     try {
         const headCommand = new HeadObjectCommand({

@@ -1,9 +1,29 @@
 import { getNotionClient } from "./client";
 import type { ListBlockChildrenResponse } from "@notionhq/client/build/src/api-endpoints";
+import { readFile } from "fs/promises";
+import { join } from "path";
 
-// Module-level cache that persists across requests in development
-const devCache = new Map<string, { data: ListBlockChildrenResponse | null; timestamp: number }>();
-const CACHE_TTL = 10 * 60 * 1000; // 10 minutes in milliseconds
+const MOCK_DATA_PATH = join(process.cwd(), 'data', 'notion-blocks.json');
+
+async function loadMockNotionBlocks(): Promise<ListBlockChildrenResponse | null> {
+    try {
+        const fileContent = await readFile(MOCK_DATA_PATH, 'utf-8');
+        const { data } = JSON.parse(fileContent) as {
+            pageId: string;
+            fetchedAt: string;
+            data: ListBlockChildrenResponse;
+        };
+        console.log('[Mock Data] Loaded Notion blocks from file');
+        return data;
+    } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+            console.log('[Mock Data] No mock data file found');
+        } else {
+            console.error('[Mock Data] Failed to load mock data:', error);
+        }
+        return null;
+    }
+}
 
 export async function fetchNotionPage(pageId: string) {
     const notion = getNotionClient();
@@ -46,26 +66,17 @@ async function _fetchNotionBlocksInternal(pageId: string): Promise<ListBlockChil
 }
 
 export async function fetchNotionBlocks(pageId: string): Promise<ListBlockChildrenResponse | null> {
-    // Use in-memory cache in development mode
-    if (process.env.NODE_ENV === 'development') {
-        const cached = devCache.get(pageId);
-        const now = Date.now();
-
-        if (cached && (now - cached.timestamp) < CACHE_TTL) {
-            console.log('[Cache HIT] Using cached Notion blocks (age:', Math.round((now - cached.timestamp) / 1000), 's)');
-            return cached.data;
+    // Check for mock data first (in dev mode or when USE_MOCK_DATA is set)
+    if (process.env.NODE_ENV === 'development' || process.env.USE_MOCK_DATA === 'true') {
+        const mockData = await loadMockNotionBlocks();
+        if (mockData) {
+            console.log('[Mock Data] Using mock data from file');
+            return mockData;
         }
-
-        console.log('[Cache MISS] Fetching from Notion...');
+        if (process.env.USE_MOCK_DATA === 'true') {
+            console.warn('[Mock Data] USE_MOCK_DATA is true but no mock file found, falling back to Notion...');
+        }
     }
 
-    const result = await _fetchNotionBlocksInternal(pageId);
-
-    // Store in cache for development
-    if (process.env.NODE_ENV === 'development' && result) {
-        devCache.set(pageId, { data: result, timestamp: Date.now() });
-        console.log('[Cache] Stored in cache');
-    }
-
-    return result;
+    return await _fetchNotionBlocksInternal(pageId);
 }
