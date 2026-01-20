@@ -41,13 +41,7 @@ export default async function Home() {
                 .replace(/^(https?:\/\/)?(www\.)?/, '')
                 .replace(/\/$/, '')}
             </div>
-            <LazyImage
-              className="rounded-md w-full h-auto"
-              src={website.imageUrl}
-              alt={website.websiteUrl}
-              width={600}
-              height={400}
-            />
+            <LazyImage src={website.imageUrl} alt={website.websiteUrl} />
             <div className="w-full flex justify-between items-center text-sm pt-4 gap-2 flex-wrap">
               <span className="font-light text-xs text-gray-500 whitespace-nowrap">
                 added {format(new Date(website.createdTime), 'dd/MM/yyyy')}
