@@ -1,6 +1,7 @@
 import { fetchNotionBlocks } from '@/lib/notion/fetch';
 import { parseBlocks } from '@/lib/notion/parser';
 import { LazyImage } from './LazyImage';
+import { ScrollToTop } from './ScrollToTop';
 import { format } from 'date-fns';
 
 // full garden
@@ -39,6 +40,7 @@ export default async function Home() {
             <div className="w-full mb-1 text-lg font-light wrap-break-words">
               {website.websiteUrl
                 .replace(/^(https?:\/\/)?(www\.)?/, '')
+                .split('/')[0]
                 .replace(/\/$/, '')}
             </div>
             <LazyImage src={website.imageUrl} alt={website.websiteUrl} />
@@ -71,6 +73,7 @@ export default async function Home() {
           liamp.uk
         </a>
       </div>
+      <ScrollToTop />
     </div>
   );
 }

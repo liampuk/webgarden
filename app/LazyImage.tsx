@@ -9,6 +9,7 @@ interface LazyImageProps {
 
 export function LazyImage({ src, alt }: LazyImageProps) {
   const [isInView, setIsInView] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const imgRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -16,6 +17,7 @@ export function LazyImage({ src, alt }: LazyImageProps) {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
+            setIsLoading(true);
             setIsInView(true);
             observer.disconnect();
           }
@@ -38,18 +40,27 @@ export function LazyImage({ src, alt }: LazyImageProps) {
   }, []);
 
   return (
-    <div ref={imgRef} className="w-full aspect-video">
+    <div ref={imgRef} className="w-full aspect-video relative">
       {isInView ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={src}
-          alt={alt}
-          className="w-full aspect-video rounded-md"
-          loading="lazy"
-        />
+        <>
+          {isLoading && (
+            <div className="absolute inset-0 bg-card-foreground rounded-md animate-pulse" />
+          )}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={src}
+            alt={alt}
+            className={`w-full aspect-video rounded-md transition-opacity duration-300 ${
+              isLoading ? 'opacity-0' : 'opacity-100'
+            }`}
+            loading="lazy"
+            onLoad={() => setIsLoading(false)}
+            onError={() => setIsLoading(false)}
+          />
+        </>
       ) : (
         // Placeholder to maintain layout
-        <div className="bg-gray-100/5 rounded-md w-full aspect-video" />
+        <div className="bg-card-background rounded-md w-full aspect-video animate-pulse" />
       )}
     </div>
   );
